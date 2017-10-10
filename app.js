@@ -26,12 +26,8 @@ function startRelay(){
 	startEncode();
 }
 
-var rtsp_transport = 'tcp';
 var rtsp 		   = '192.168.0.19:554/onvif1'
-var paramsSocket = ['-re',
-				    '-rtsp_transport',rtsp_transport,
-				    '-i', 'rtsp://'+rtsp,  
-				    '-map' , '0:0',  
+var paramsSocket = ['-i', 'rtsp://'+rtsp,  
 				    '-codec:v','mpeg1video',
 				    '-b','64k',
 				    '-s', '340x340', 
@@ -62,6 +58,7 @@ function startEncode(){
 	});
 	socketProcess.on('close', function(data) {
 	   console.log('socketPath close : ',data);
+	   startEncode();
 	});
 }
 
