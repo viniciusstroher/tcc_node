@@ -26,8 +26,8 @@ function startRelay(){
 	startEncode();
 }
 
-var rtsp 		   = '192.168.0.19:554/onvif1'
-var paramsSocket = ['-i', 'rtsp://'+rtsp,  
+var rtsp 		   = '192.168.0.28:554/onvif1'
+var paramsSocket   = ['-i', 'rtsp://'+rtsp,  
 				    '-codec:v','mpeg1video',
 				    '-b','64k',
 				    '-s', '340x340', 
@@ -55,6 +55,7 @@ function startEncode(){
 
 	socketProcess.stderr.on('data', function(data) {
 	   console.log('socketPath stderr : ',data);
+	   //startEncode();
 	});
 	socketProcess.on('close', function(data) {
 	   console.log('socketPath close : ',data);
