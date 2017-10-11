@@ -1,7 +1,11 @@
 var app    = require('express')();
+var bodyParser = require('body-parser');
+
+//app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 var server = require('http').Server(app);
 var io 	   = require('socket.io')(server);
-var port   = 8000;
+var port   = 10000;
 server.listen(port);
 
 app.get('/', function (req, res) {
@@ -13,6 +17,10 @@ var senhaDaAPI 		  = "teste";
 var sensores 		  = {};
 var sensoresHistorico = [];
 var sockets 		  = [];
+
+var eventos 		  = [];
+var ultimoEvento 	  = null;
+
 io.on('connection', function (socket) {
   socket.socketIndexFila = sockets.length;
   sockets.push(socket);
@@ -44,4 +52,45 @@ io.on('connection', function (socket) {
   })
 
   socket.emit("conectado",{conectado:true});
+});
+
+function emitEventsOnSockets(){
+	for(i=0;i<sockets.length;i++){
+		var s = sockets[i];
+		s.emit('statusSensoresAPP', { sensores: ultimoEvento }); 	
+	}
+}
+
+app.post('/pir', function (req, res) {
+	//Api-Key:
+	if(senhaDaAPI != req.get('Api-Key')){
+		res.send({error:"senha invalida."});
+	}else{
+		var data = new Date().toISOString();
+		var json = req.body;
+		json.date= data;
+
+		eventos.push(json);
+		ultimoEvento = json;
+
+		emitEventsOnSockets();
+		res.send({retorno:true});
+	}
+});
+
+app.post('/porta_aberta', function (req, res) {
+	//Api-Key:
+	if(senhaDaAPI != req.get('Api-Key')){
+		res.send({error:"senha invalida."});
+	}else{
+		var data = new Date().toISOString();
+		var json = req.body;
+		json.date= data;
+
+		eventos.push(json);
+		ultimoEvento = json;
+
+		emitEventsOnSockets();
+		res.send({retorno:true});
+	}
 });
