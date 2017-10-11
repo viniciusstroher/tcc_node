@@ -14,10 +14,8 @@ app.get('/', function (req, res) {
 
 var senhaDaAPI 		  = "teste";
 
-var sensores 		  = {};
-var sensoresHistorico = [];
-var sockets 		  = [];
 
+var sockets 		  = [];
 var eventos 		  = [];
 var ultimoEvento 	  = null;
 
@@ -37,7 +35,7 @@ io.on('connection', function (socket) {
 		if(data.senha != senhaDaAPI){
 			socket.emit('statusSensoresAPP', { error: "senha invalida." });  		
 		}else{
-			socket.emit('statusSensoresAPP', { sensores: sensores }); 		
+			socket.emit('statusSensoresAPP', { evento: ultimoEvento }); 		
 		}
 	}
     
@@ -57,7 +55,7 @@ io.on('connection', function (socket) {
 function emitEventsOnSockets(){
 	for(i=0;i<sockets.length;i++){
 		var s = sockets[i];
-		s.emit('statusSensoresAPP', { sensores: ultimoEvento }); 	
+		s.emit('statusSensoresAPP', { evento: ultimoEvento }); 	
 	}
 }
 
