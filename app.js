@@ -65,5 +65,3 @@ function startSocket(scriptPath,params){
 
 console.log("INICINADO SERVIDOR");
 startRelay();
-
-//ffmpeg  -i rtsp://192.168.0.19:554/onvif1 -codec:v mpeg1video -b 64k -s 340x340 -r 24 -f mpegts http://localhost:9000/1234

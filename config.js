@@ -5,6 +5,8 @@ config.wsSocketPort   = 9001;
 config.scriptSecret   = "1234";
 
 config.rtsp 		  = '192.168.0.28:554/onvif1'
+
+//ffmpeg  -i rtsp://192.168.0.19:554/onvif1 -codec:v mpeg1video -b 64k -s 340x340 -r 24 -f mpegts http://localhost:9000/1234
 config.paramsSocket   = ['-i', 'rtsp://'+config.rtsp,  
 				    '-codec:v','mpeg1video',
 				    '-b','64k',
