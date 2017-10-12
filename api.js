@@ -20,9 +20,15 @@ var ultimoEvento 	  = null;
 
 io.on('connection', function (socket) {
   socket.socketIndexFila = sockets.length;
-  sockets.push(socket);
+  
   
   console.log('Cliente conectado.');
+
+  socket.on('enviaToken',function(data){
+  	socket.token_app = data.token;
+  	socket.cli_app   = data.cli;
+  });
+
   //QUANDO O APP PEDE O ESTADO DO SENSOR  
   socket.on('statusSensoresServer', function (data) {
   	
@@ -46,8 +52,9 @@ io.on('connection', function (socket) {
   	}catch(ex){
   		console.log("disconnect error socket index bug",ex);
   	}
-  })
+  });
 
+  sockets.push(socket);
   socket.emit("conectado",{conectado:true});
 });
 
