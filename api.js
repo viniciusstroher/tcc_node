@@ -22,15 +22,15 @@ var api 			  = config.api_gcm;
 
 io.on('connection', function (socket) {
   socket.socketIndexFila = sockets.length;
-  
-  
+  sockets.push(socket);
   console.log('Cliente conectado.');
 
   socket.on('enviaToken',function(data){
-  	socket.token_app = data.token;
-  	socket.cli_app   = data.cli;
-
-  	console.log('enviaToken',data);
+  	if(socket.socketIndexFila){
+	  	sockets[socket.socketIndexFila].token_app = data.token;
+	  	sockets[socket.socketIndexFila].cli_app   = data.cli;
+	  	console.log('enviaToken',data);
+  	}
   });
 
   //QUANDO O APP PEDE O ESTADO DO SENSOR  
@@ -58,17 +58,17 @@ io.on('connection', function (socket) {
   	}
   });
 
-  sockets.push(socket);
+  
   socket.emit("conectado",{conectado:true});
 });
 
 app.post('/pir', function (req, res) {
 	//Api-Key:
-	console.log(senhaDaAPI , req.get('Api-Key'));
+	//console.log(senhaDaAPI , req.get('Api-Key'));
 	if(senhaDaAPI != req.get('Api-Key')){
 		res.send({error:"senha invalida."});
 	}else{
-		console.log('evento: /pir',req.body,req.get('Api-Key'));
+		console.log('evento: /pir','-',req.body,req.get('Api-Key'));
 	
 		var data = new Date().toISOString();
 		var json = req.body;
@@ -84,11 +84,11 @@ app.post('/pir', function (req, res) {
 
 app.post('/porta_aberta', function (req, res) {
 	//Api-Key:
-	console.log(senhaDaAPI , req.get('Api-Key'));
+	//console.log(senhaDaAPI , req.get('Api-Key'));
 	if(senhaDaAPI != req.get('Api-Key')){
 		res.send({error:"senha invalida."});
 	}else{
-		console.log('evento: /porta_aberta',req.body,req.get('Api-Key'));
+		console.log('evento: /porta_aberta','-',req.body,req.get('Api-Key'));
 	
 		var data = new Date().toISOString();
 		var json = req.body;
@@ -99,7 +99,7 @@ app.post('/porta_aberta', function (req, res) {
 
 		emitEventsOnSockets();
 
-		//enviaPush(config.api_gcm,getAndroidToken());
+		enviaPush(config.api_gcm,getAndroidToken());
 
 		res.send({retorno:true});
 	}
@@ -115,11 +115,13 @@ function emitEventsOnSockets(){
 }
 
 function getAndroidToken(){
-	var tokens = []
-	for(i=0;i<sockets;i++){
+	var tokens = [];
+	for(i=0;i<sockets.length;i++){
 		var s = sockets[i];
+		console.log(s.cli_app);
 		if(s.hasOwnProperty('cli_app')){
-			if(s.cli == "android"){
+			console.log(s.cli_app);
+			if(s.cli_app == "android"){
 				tokens.push(s.token_app);
 			}
 		}
@@ -132,16 +134,33 @@ function enviaPush(api,tokens){
 	var sender = new gcm.Sender(api);
 	// Prepare a message to be sent
 	var message = new gcm.Message({
-	    data: { key1: 'msg1' }
+		collapseKey: 'demo',
+		priority: 'high',
+		contentAvailable: true,
+		delayWhileIdle: true,
+		timeToLive: 3,
+		restrictedPackageName: "somePackageName",
+		dryRun: true,
+		data: {
+			key1: 'message1',
+			key2: 'message2'
+		},
+		notification: {
+			title: "Hello, World",
+			icon: "ic_launcher",
+			body: "This is a notification that will be displayed if your app is in the background."
+		}
 	});
+
 	// array - tokens
 	var regTokens = tokens; 
+	console.log(regTokens);
 	// Actually send the message
 	sender.send(message, { registrationTokens: regTokens }, function (err, response) {
 	    if (err){
-	    	console.error(err);
+	    	console.error('sender.send error',err);
 	    }else{ 
-	    	console.log(response); 
+	    	console.log('sender.send',response); 
 	    }
 	});
 }
