@@ -27,6 +27,8 @@ io.on('connection', function (socket) {
   socket.on('enviaToken',function(data){
   	socket.token_app = data.token;
   	socket.cli_app   = data.cli;
+
+  	console.log('enviaToken',data);
   });
 
   //QUANDO O APP PEDE O ESTADO DO SENSOR  
@@ -89,7 +91,6 @@ app.post('/porta_aberta', function (req, res) {
 	}else{
 		var data = new Date().toISOString();
 		var json = req.body;
-		console.log(json);
 		json.date= data;
 
 		eventos.push(json);
