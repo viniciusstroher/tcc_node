@@ -117,8 +117,11 @@ app.post('/porta_aberta', function (req, res) {
 						title: "Estado da porta "+ (json.magnetico ? 'aberta' : 'fechada'),
 						icon: "ic_launcher",
 						body: "Estado da porta se encontra "+ (json.magnetico ? 'aberta' : 'fechada')+" no momento."
-					}
-		enviaPush(config.api_gcm,androidTokens,notif);
+					};
+		
+		var notif_data = json;
+
+		enviaPush(config.api_gcm,androidTokens,notif,notif_data);
 
 		res.send({retorno:true});
 	}
@@ -133,16 +136,13 @@ function emitEventsOnSockets(){
 	}
 }
 
-function enviaPush(api,tokens,notification){
+function enviaPush(api,tokens,notification,data_notification){
 	var gcm    = require('node-gcm');
 	var sender = new gcm.Sender(api);
 	// Prepare a message to be sent
 	var message = new gcm.Message({
-		priority: 'high',
-		data: {
-			key1: 'message1',
-			key2: 'message2'
-		},
+		priority    : 'high',
+		data 		: data_notification,
 		notification: notification
 	});
 
