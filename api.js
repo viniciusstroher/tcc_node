@@ -20,6 +20,11 @@ var ultimoEvento 	  = null;
 
 var api 			  = config.api_gcm;
 
+
+var androidTokens = [];
+var webTokens 	  = [];
+var iosTokens 	  = [];
+
 io.on('connection', function (socket) {
   socket.socketIndexFila = sockets.length;
   sockets.push(socket);
@@ -31,6 +36,13 @@ io.on('connection', function (socket) {
   		console.log('socket.socketIndexFila',socket.socketIndexFila);
 	  	sockets[socket.socketIndexFila].token_app = data.token;
 	  	sockets[socket.socketIndexFila].cli_app   = data.cli;
+
+	  	if(data.cli == "android"){
+	  		if(androidTokens.indexOf(data.token) == -1){
+	  			androidTokens.push(data.token);
+	  		}
+	  	}
+	  	//adicionar oturos dps
 	  	
   	}
   });
@@ -101,8 +113,12 @@ app.post('/porta_aberta', function (req, res) {
 		ultimoEvento = json;
 
 		emitEventsOnSockets();
-
-		enviaPush(config.api_gcm,getAndroidToken());
+		var notif = {
+						title: "Estado da porta "+ (json.magnetico ? 'aberta' : 'fechada'),
+						icon: "ic_launcher",
+						body: "Estado da porta se encontra "+ (json.magnetico ? 'aberta' : 'fechada')+" no momento."
+					}
+		enviaPush(config.api_gcm,androidTokens,notif);
 
 		res.send({retorno:true});
 	}
@@ -117,42 +133,17 @@ function emitEventsOnSockets(){
 	}
 }
 
-function getAndroidToken(){
-	var tokens = [];
-	for(i=0;i<sockets.length;i++){
-		var s = sockets[i];
-		console.log(s.cli_app);
-		if(s.hasOwnProperty('cli_app')){
-			console.log(s.cli_app);
-			if(s.cli_app == "android"){
-				tokens.push(s.token_app);
-			}
-		}
-	}
-	return tokens;
-}
-
-function enviaPush(api,tokens){
+function enviaPush(api,tokens,notification){
 	var gcm    = require('node-gcm');
 	var sender = new gcm.Sender(api);
 	// Prepare a message to be sent
 	var message = new gcm.Message({
-		collapseKey: 'demo',
 		priority: 'high',
-		contentAvailable: true,
-		delayWhileIdle: true,
-		timeToLive: 3,
-		restrictedPackageName: "somePackageName",
-		dryRun: true,
 		data: {
 			key1: 'message1',
 			key2: 'message2'
 		},
-		notification: {
-			title: "Hello, World",
-			icon: "ic_launcher",
-			body: "This is a notification that will be displayed if your app is in the background."
-		}
+		notification: notification
 	});
 
 	// array - tokens
