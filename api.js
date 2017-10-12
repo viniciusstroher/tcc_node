@@ -119,8 +119,8 @@ app.post('/porta_aberta', function (req, res) {
 						body: "Estado da porta se encontra "+ (json.magnetico ? 'aberta' : 'fechada')+" no momento."
 					};
 		
-		var notif_data = json;
-
+		var notif_data = {};
+		notif_data.evento = json;
 		enviaPush(config.api_gcm,androidTokens,notif,notif_data);
 
 		res.send({retorno:true});
