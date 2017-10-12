@@ -1,5 +1,5 @@
 var config 			  = {};
-
+//VIDEO
 config.scriptPort 	  = 9000;
 config.wsSocketPort   = 9001;
 config.scriptSecret   = "1234";
@@ -16,11 +16,9 @@ config.paramsSocket   = ['-i', 'rtsp://'+config.rtsp,
 				    'http://localhost:'+config.scriptPort+'/'+config.scriptSecret
  				  	];
 
-
+//API
 config.port_app   = 10000;
-config.senhaDaApi = "teste";
-
-
+config.senha_api  = "teste";
 config.api_gcm    = "AIzaSyCtLqqa5zpmz21sRDmQMibLIgkNx-Wfmus";
 
 module.exports = config;

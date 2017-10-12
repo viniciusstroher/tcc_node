@@ -13,7 +13,7 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-var senhaDaAPI 		  = config.senhaDaAPI;
+var senhaDaAPI 		  = config.senha_api;
 var sockets 		  = [];
 var eventos 		  = [];
 var ultimoEvento 	  = null;
@@ -62,26 +62,20 @@ io.on('connection', function (socket) {
   socket.emit("conectado",{conectado:true});
 });
 
-function emitEventsOnSockets(){
-	for(i=0;i<sockets.length;i++){
-		var s = sockets[i];
-		s.emit('statusSensoresAPP', { evento: ultimoEvento }); 	
-	}
-}
-
 app.post('/pir', function (req, res) {
 	//Api-Key:
+	console.log(senhaDaAPI , req.get('Api-Key'));
 	if(senhaDaAPI != req.get('Api-Key')){
 		res.send({error:"senha invalida."});
 	}else{
+		console.log('evento: /pir',req.body,req.get('Api-Key'));
+	
 		var data = new Date().toISOString();
 		var json = req.body;
 		json.date= data;
 
 		eventos.push(json);
 		ultimoEvento = json;
-
-		console.log('evento: /pir');
 
 		emitEventsOnSockets();
 		res.send({retorno:true});
@@ -90,18 +84,18 @@ app.post('/pir', function (req, res) {
 
 app.post('/porta_aberta', function (req, res) {
 	//Api-Key:
+	console.log(senhaDaAPI , req.get('Api-Key'));
 	if(senhaDaAPI != req.get('Api-Key')){
 		res.send({error:"senha invalida."});
 	}else{
+		console.log('evento: /porta_aberta',req.body,req.get('Api-Key'));
+	
 		var data = new Date().toISOString();
 		var json = req.body;
 		json.date= data;
 
 		eventos.push(json);
 		ultimoEvento = json;
-
-
-		console.log('evento: /porta_aberta');
 
 		emitEventsOnSockets();
 
@@ -110,6 +104,15 @@ app.post('/porta_aberta', function (req, res) {
 		res.send({retorno:true});
 	}
 });
+
+
+function emitEventsOnSockets(){
+	console.log('emitEventsOnSockets');
+	for(i=0;i<sockets.length;i++){
+		var s = sockets[i];
+		s.emit('statusSensoresAPP', { evento: ultimoEvento }); 	
+	}
+}
 
 function getAndroidToken(){
 	var tokens = []
