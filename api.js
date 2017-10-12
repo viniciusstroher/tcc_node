@@ -54,6 +54,7 @@ io.on('connection', function (socket) {
 
   socket.on("disconnect",function(data){
   	try{
+  		console.log("socket disconnect index: ",socket.socketIndexFila);
   		sockets.splice(socket.socketIndexFila,1);
   	}catch(ex){
   		console.log("disconnect error socket index bug",ex);
