@@ -18,6 +18,8 @@ var sockets 		  = [];
 var eventos 		  = [];
 var ultimoEvento 	  = null;
 
+var api 			  = config.api_gcm;
+
 io.on('connection', function (socket) {
   socket.socketIndexFila = sockets.length;
   
@@ -79,6 +81,8 @@ app.post('/pir', function (req, res) {
 		eventos.push(json);
 		ultimoEvento = json;
 
+		console.log('evento: /pir');
+
 		emitEventsOnSockets();
 		res.send({retorno:true});
 	}
@@ -96,7 +100,45 @@ app.post('/porta_aberta', function (req, res) {
 		eventos.push(json);
 		ultimoEvento = json;
 
+
+		console.log('evento: /porta_aberta');
+
 		emitEventsOnSockets();
+
+		//enviaPush(config.api_gcm,getAndroidToken());
+
 		res.send({retorno:true});
 	}
 });
+
+function getAndroidToken(){
+	var tokens = []
+	for(i=0;i<sockets;i++){
+		var s = sockets[i];
+		if(s.hasOwnProperty('cli_app')){
+			if(s.cli == "android"){
+				tokens.push(s.token_app);
+			}
+		}
+	}
+	return tokens;
+}
+
+function enviaPush(api,tokens){
+	var gcm    = require('node-gcm');
+	var sender = new gcm.Sender(api);
+	// Prepare a message to be sent
+	var message = new gcm.Message({
+	    data: { key1: 'msg1' }
+	});
+	// array - tokens
+	var regTokens = tokens; 
+	// Actually send the message
+	sender.send(message, { registrationTokens: regTokens }, function (err, response) {
+	    if (err){
+	    	console.error(err);
+	    }else{ 
+	    	console.log(response); 
+	    }
+	});
+}

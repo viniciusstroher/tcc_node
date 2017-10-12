@@ -11,6 +11,7 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
+    "node-gcm": "^0.14.8",
     "socket.io": "^2.0.3"
   }
 }
