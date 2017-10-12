@@ -83,6 +83,7 @@ app.post('/porta_aberta', function (req, res) {
 	}else{
 		var data = new Date().toISOString();
 		var json = req.body;
+		console.log(json);
 		json.date= data;
 
 		eventos.push(json);
