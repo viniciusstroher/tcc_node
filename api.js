@@ -27,9 +27,11 @@ io.on('connection', function (socket) {
 
   socket.on('enviaToken',function(data){
   	if(socket.socketIndexFila){
+  		console.log('enviaToken',data);
+  		console.log('socket.socketIndexFila',socket.socketIndexFila);
 	  	sockets[socket.socketIndexFila].token_app = data.token;
 	  	sockets[socket.socketIndexFila].cli_app   = data.cli;
-	  	console.log('enviaToken',data);
+	  	
   	}
   });
 
