@@ -1,10 +1,10 @@
 var childProcess = require('child_process');
-
+var config 		 = require('./config.js');
 
 //PROCESSO DE ABERTURA DO RELAY
-var scriptPort 	 = 9000;
-var wsSocketPort = 9001;
-var scriptSecret = "1234";
+var scriptPort 	 = config.scriptPort;
+var wsSocketPort = config.wsSocketPort;
+var scriptSecret = config.scriptSecret;
 
 var paramsProcess = [scriptSecret,scriptPort,wsSocketPort];
 var scriptProcess = null;
@@ -26,20 +26,11 @@ function startRelay(){
 	startEncode();
 }
 
-var rtsp 		   = '192.168.0.28:554/onvif1'
-var paramsSocket   = ['-i', 'rtsp://'+rtsp,  
-				    '-codec:v','mpeg1video',
-				    '-b','64k',
-				    '-s', '340x340', 
-				    '-r', '24', 
-				    '-f','mpegts', /*ou mpegts*/
-				    'http://localhost:'+scriptPort+'/'+scriptSecret
- 				  ];
-
-var socketProcess = null;
-var socketStatus  = false;
-var socketPath 	  = "ffmpeg";
-
+var rtsp 		   = config.rtsp;
+var paramsSocket   = config.paramsSocket;
+var socketProcess  = null;
+var socketStatus   = false;
+var socketPath 	   = "ffmpeg";
 
 function startEncode(){
 	socketProcess = startSocket(socketPath,paramsSocket);

@@ -1,20 +1,19 @@
-var app    = require('express')();
-var bodyParser = require('body-parser');
+var app    		 = require('express')();
+var bodyParser   = require('body-parser');
+var config 		 = require('./config.js');
 
 //app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 var server = require('http').Server(app);
 var io 	   = require('socket.io')(server);
-var port   = 10000;
+var port   = config.port_app;
 server.listen(port);
 
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-var senhaDaAPI 		  = "teste";
-
-
+var senhaDaAPI 		  = config.senhaDaAPI;
 var sockets 		  = [];
 var eventos 		  = [];
 var ultimoEvento 	  = null;
