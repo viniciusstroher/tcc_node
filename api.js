@@ -93,6 +93,16 @@ app.post('/pir', function (req, res) {
 		ultimoEvento = json;
 
 		emitEventsOnSockets();
+		var notif = {
+						title: "Movimentação ",
+						icon: "ic_launcher",
+						body: "Houve uma captura de movimentação do pir  no momento."
+					};
+		
+		var notif_data = {};
+		notif_data.evento = json;
+		enviaPush(config.api_gcm,androidTokens,notif,notif_data);
+
 		res.send({retorno:true});
 	}
 });
